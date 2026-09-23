@@ -23,7 +23,7 @@ python3 scripts/fere.py wallets alice
 python3 scripts/fere.py holdings alice
 ```
 
-A process that owns exactly one wallet can skip the keyring and set `FERE_AGENT_SEED_B64` and `FERE_AGENT_ID`, or `FERE_TOKEN` for a short-lived bearer. `fere.py` reads all three.
+A server that owns exactly one wallet can skip the keyring and set `FERE_AGENT_SEED_B64` and `FERE_AGENT_ID`, or `FERE_TOKEN` for a short-lived bearer. `fere.py` reads all three.
 
 Two wallets means two agents. There are no sub-accounts. A wallet per end user is the `fere-multitenant` skill.
 
@@ -35,7 +35,7 @@ fere_<base58check( version ‖ seed32 [‖ utf8(agent_id)] )>
         version 0x00 = seed only → recover agent_id by re-registering the same key
 ```
 
-`base58check` is the payload plus the first 4 bytes of double-SHA256. Do not validate by length; length varies with the agent id. `fere.py import` accepts any prefix.
+`base58check` is the payload plus the first 4 bytes of double-SHA256. Do not validate by length; length varies with the agent id. Change `FERE_KEY_PREFIX` to brand it (`myapp_…`); `fere.py import` accepts any prefix.
 
 ```bash
 python3 scripts/fere.py key alice --reveal      # prints the secret to stderr

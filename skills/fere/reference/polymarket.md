@@ -33,7 +33,7 @@ The `/polymarket/*` routes accept an `agt_*` bearer and scope the response to th
 
 `fere.py poly` sends the write body as JSON (`--body '…'`). Every write returns HTTP 200 and a `task_id`, then fails in the task. A bad `token_id` is a task error, not an HTTP error. A 502 (`All connection attempts failed`) means retry shortly. It does not mean setup is missing.
 
-Prefer a direct deposit to `deposit_addresses` over `fere_polymarket_fund`.
+Prefer a direct deposit to the setup `deposit_addresses` over `fere_polymarket_fund`.
 
 ## Prices
 
@@ -50,7 +50,7 @@ fere_polymarket_order {
   order_type: "GTC"|"GTD"|"FOK"|"FAK",
   size: "25",
   amount: "10",
-  expiration_seconds: 3600,
+  expiration_seconds: 3600,       // GTD only
   take_profit_price: "0.80"
 }
 ```

@@ -10,7 +10,7 @@ fere_earn_withdraw  {position_id, amount_usdc}
 fere_earn_info                                    # vault and current rate, no auth args
 ```
 
-REST: `GET /v1/earn/vault`, `POST /v1/earn/enable`, `POST /v1/earn/deposit`, `POST /v1/earn/withdraw`, `GET /v1/earn/positions`, `GET /v1/earn`.
+REST: `GET /v1/earn/vault`, `POST /v1/earn/enable`, `POST /v1/earn/deposit`, `POST /v1/earn/withdraw`, `GET /v1/earn/positions`, `GET /v1/earn`. All six accept the `agt_` bearer.
 
 ## Rules the schema does not state
 

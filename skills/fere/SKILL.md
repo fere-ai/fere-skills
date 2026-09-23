@@ -34,14 +34,14 @@ lane below, read the one reference file it names, then act.
 | Auth | Clerk OAuth against `https://api.fereai.xyz/mcp` (add it as a connector) | Ed25519 → `agt_*` bearer, 1 h |
 | Wallets | exactly one pair — the account's | one pair per agent; more wallets = more agents |
 | Polymarket | ✅ 12 tools, incl. discovery + live prices (but `fere_polymarket_setup` posts `/setup/v2`, which fails on a fresh agent — let `fere_polymarket_account` run setup) | ✅ **own Safe per agent** via the `/polymarket/*` routes; no discovery/price tools |
-| Hyperliquid | ✅ perps + spot on that one account | ✅ **own HL account per agent** (`min_fund_usd` 50 — **fund first, then `POST /v1/perp/setup`**; setup on an empty account fails `HYPERLIQUID_NOT_FUNDED`) |
+| Hyperliquid | ✅ perps + spot on that one account | ✅ **own HL account per agent** (`min_fund_usd` 50 — **fund first; fund runs setup itself**; setup on an empty account fails `HYPERLIQUID_NOT_FUNDED`) |
 | Task polling | ❌ no task tool → **confirm every fill by holdings diff** | ✅ `GET /v1/tasks/{id}` (still diff holdings; **poll with a deadline** — an id that was never issued is `200 PENDING` forever) |
 
 **If both are available, prefer MCP for the user's own money and the CLI for anything
 multi-wallet.** They are the same backend; a wallet made by one is invisible to the
 other unless you hold its key.
 
-## 2. Sixty seconds to a funded wallet
+## 2. Minutes to a funded wallet
 
 Run these from this skill's directory. Paths are `scripts/…` next to this file.
 
@@ -67,16 +67,7 @@ rest, then **confirms the fill by diffing holdings** and exits non-zero if it ca
 The keyring lives at `$FERE_HOME` (default `~/.fere/agents.json`, 0600) — **that file
 is the login**; back it up, never commit it, never print it.
 
-> **What has and hasn't been run live.** Every real-money fill in our records went
-> through the MCP connector on our own account. On key-registered agents (which is
-> what `fere.py` and the REST path make) we have exercised **every wallet-facing REST
-> operation** on a never-funded agent — 119 calls, 0 credits: auth, reads, dryruns (which fail on balance, by design), hooks and
-> limit orders (which register on a zero balance), Polymarket setup and a real order
-> that reached the CLOB's cash check, HL setup (fails `HYPERLIQUID_NOT_FUNDED`), and
-> Earn (fails at its $100 floor). **The money path is now verified end to end**: 5 swaps, a perp open/close, two Polymarket CLOB fills, all through
-> an `agt_` bearer. Superseded text follows; **no live fill has
-> gone through `fere.py buy` or a raw REST swap in our hands yet.** Run one funded $10
-> round trip through your own path before it touches money you care about.
+> **Provenance.** Live fills have gone through both the MCP connector and the key-auth REST path. `fere.py buy` itself has not carried a live fill in our hands yet. Run one funded $10 round trip through your own path before it touches money you care about.
 
 ## 3. The six rules that cost real money to learn
 
@@ -98,7 +89,7 @@ is the login**; back it up, never commit it, never print it.
    `BELOW_MINIMUM`) is definitive too. **Always poll with a deadline**: `GET
    /v1/tasks/{id}` answers `200 PENDING` forever for an id that was never issued, so
    "poll until terminal" never terminates on a typo.
-3. **A timed-out write is UNKNOWN — read, never re-send.** `idempotency_key` is accepted but **not enforced**: on 2026-09-12 one key produced three filled swaps because the client re-sent on a read timeout. A ConnectError is safe to retry (nothing was sent); a ReadTimeout is not.
+3. **A timed-out write is UNKNOWN — read, never re-send.** `idempotency_key` is accepted but **not enforced**: one key produced three filled swaps because the client re-sent on a read timeout. A ConnectError is safe to retry (nothing was sent); a ReadTimeout is not.
 4. **One on-chain action in flight per wallet, ≥3 s gap.** Parallel sends produce
    mempool nonce errors. `fere.py` takes a per-wallet lock and queues; keep that.
 5. **Hooks re-base on Fere's price at registration, not your entry, and they decay.**
@@ -118,7 +109,7 @@ All-in cost measured **57–70 bps per leg** same-chain (120 bps round trip); br
 | The ask | Read | Surface |
 |---|---|---|
 | Wallets, keys, recovery, custody, no-CORS, gasless | `reference/wallets.md` | `fere.py new/ls/key/import/recover` |
-| **Putting this in a consumer product** — the passthrough allowlist that shipped, CSP for a key-holding page, `prepare`/sizing, the fill rule, the funding journey | `reference/consumer-app.md` | your own `/api/fere/{path}` |
+| **Putting this in a consumer product** — the passthrough allowlist, CSP for a key-holding page, `prepare`/sizing, the fill rule, the funding journey | `reference/consumer-app.md` | your own `/api/fere/{path}` |
 | A wallet per end user; replacing Privy/Turnkey/CDP | the **`/fere-multitenant`** skill | same CLI, keyring of N agents |
 | Buy/sell a token, bridge, TP/SL, limit orders, honeypot check | `reference/spot.md` | `POST /v1/swap` · `fere_swap` |
 | Perps, leverage, funding, HL spot | `reference/hyperliquid.md` | `fere_perp_*` · `fere_spot_hl_*` |
@@ -192,5 +183,5 @@ only**, and never trade off a stale one.
 
 **A deposit confirmed on-chain but missing from holdings** is Fere's saved answer, not
 lost money: read once with `?event=wallet-refresh`. Funding and swaps validate against
-the chain, not that list, so they already work (2026-09-23: $100 USDC on Base invisible
+the chain, not that list, so they already work (a $100 USDC deposit on Base once stayed invisible
 for ~40 min to plain polls while `perp/fund` moved it first try — Fere's RCA).

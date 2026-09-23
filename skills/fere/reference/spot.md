@@ -37,7 +37,7 @@ POST /v1/swap?wait=true&timeout=90
   "token_in":  "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
   "token_out": "0x<token>",
   "amount": "10000000",
-  "slippage_bps": 300,
+  "slippage_bps": 300,                               // the API default (50) is too tight; use 300
   "take_profit": {"price_percentage": 1.0, "sell_percentage": 0.5},
   "stop_loss":   {"price_percentage": 0.3, "sell_percentage": 1.0},
   "cancel_conditional_orders": false,
@@ -79,7 +79,7 @@ re-read holdings 3× over ~15 s and diff token_in and token_out
 | `GET /v1/holdings?event=wallet-refresh` | Drops the saved answer and reads the wallet. |
 | `?event=<anything else>` | Ignored. You get the saved answer. |
 
-Refresh on a user refresh, while waiting for a deposit, and on every fill diff. A display poll can stay plain. Funding and swaps validate against the chain, not this list.
+Refresh on a user refresh, while waiting for a deposit, and on every fill diff. A display poll can stay plain. Funding and swaps validate against the chain, not this list. (`_status` in `fere.py` output is the CLI's HTTP envelope, not a Fere field.)
 
 ```jsonc
 { "chain": "robinhood", "chain_id": 4663, "token_name": "FATCOIN",
@@ -125,6 +125,6 @@ Different `chain_id_out` on the same call. Do not bridge on the buy path. Cross-
 
 ## Notifications
 
-`GET /v1/notifications` returns `{events, total_count, limit, offset}`. `GET /v1/notifications/stream` is SSE and sends `: ping` every 15 seconds. `EventSource` cannot set `Authorization`. Use a streaming fetch.
+`GET /v1/notifications` returns `{events, total_count, limit, offset}`. `GET /v1/notifications/stream` is SSE: it replays recent events on connect, then `event:`/`data:` frames with a `: ping` every 15 seconds. `EventSource` cannot set `Authorization`. Use a streaming fetch.
 
-Known types: `events.onchain.swap.success`, `events.onchain.swap.failure`, `events.hooks.pt.setup.success`, `events.hooks.pt.delete.success`, `events.onchain.limit_order.setup.success`, `events.onchain.limit_order.cancel.success`. Swap success carries `txn_hash`, `amount_out`, `volume_usd`, `explorer_url`. Do not drive an exit off a hook-fire event. That type is not part of this list.
+Known types: `events.onchain.swap.success`, `events.onchain.swap.failure`, `events.hooks.pt.setup.success`, `events.hooks.pt.delete.success`, `events.onchain.limit_order.setup.success`, `events.onchain.limit_order.cancel.success`, `events.hyperliquid.{fund,setup,withdraw}.success`, `events.onchain.perp.{open,close}.success`, `events.onchain.spot.buy.failure`, `events.polymarket.{setup,fund,order}.success`. Swap success carries `txn_hash`, `amount_out`, `volume_usd`, `explorer_url`. Do not drive an exit off a hook-fire event. That type is not part of this list.

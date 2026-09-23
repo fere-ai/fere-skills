@@ -18,8 +18,8 @@ Fund first. `POST /v1/perp/fund` with at least $50 runs setup itself and returns
 ```
 fere_perp_fund            {amount, source_chain_id, source_token?}   # smallest units, ≥ $50
 fere_perp_setup           # only if fund did not already activate the account
-fere_perp_open            {asset, is_buy, size, leverage, is_cross, order_type, limit_price?, tp_price?, sl_price?, reduce_only?, slippage_pct}
-fere_perp_orders
+fere_perp_open            {asset, is_buy, size, leverage, is_cross, order_type:"market"|"limit", limit_price?, tp_price?, sl_price?, reduce_only?, slippage_pct:0.5}
+fere_perp_orders                      # open orders + TP/SL triggers + mark prices
 fere_perp_close           {asset, size?}          # omit size = full close, taker only
 fere_perp_orders_cancel   {asset, order_id}       # order_id is the venue oid
 fere_perp_withdraw        {amount_usd, destination_chain_id, destination_token?}
