@@ -134,8 +134,8 @@ All-in cost measured **57–70 bps per leg** same-chain (120 bps round trip); br
   funds out either — but it can swap them into anything, including a token the thief
   controls, so treat a leak as a loss, not a contained incident.
 - **No end-user auth.** There is no email/passkey/social login and no consent screen.
-  Your product owns identity; Fere only knows keys. (This is the Privy trade — "Custody,
-  honestly" in `reference/wallets.md`, and `/fere-multitenant`'s `reference/vs-privy.md`.)
+  Your product owns identity; Fere only knows keys. (See Custody in
+  `reference/wallets.md`, and `/fere-multitenant`'s `reference/vs-privy.md`.)
 - **No CORS.** A browser cannot call `api.fereai.xyz` directly; put a stateless
   method+path-allowlisted passthrough in front and keep `/v1/chat` denied (the one
   endpoint known to burn credits, 15 per query; a full live run — swaps, perps, CLOB
