@@ -22,7 +22,7 @@ The `/polymarket/*` routes accept an `agt_*` bearer and scope the response to th
 
 | MCP tool | REST |
 |---|---|
-| `fere_polymarket_setup` | `POST /polymarket/setup`. `/setup/v2` alone fails on a fresh agent with `v1 setup not complete`. |
+| `fere_polymarket_setup` | `POST /polymarket/setup`. The MCP tool posts `/setup/v2`, which fails on a fresh agent with `v1 setup not complete`. On a fresh agent use the REST route, or let `fere_polymarket_account` run setup. |
 | `fere_polymarket_account` | `GET /polymarket/setup/status`, `/orders/open`, `/activity`, and `GET /v1/holdings`. The MCP tool aggregates these and runs setup when `v2_complete` is false. |
 | `fere_polymarket_fund` | `POST /polymarket/fund-safe`. REST `amount` is smallest units (`"10000000"` = $10). The MCP tool takes a decimal string. |
 | `fere_polymarket_order` / `_order_cancel` | `POST /polymarket/order` with `{side, price, amount, order_type, token_id}`. Cancel needs one of `order_id`, `market_id`, or `cancel_all: true`. The MCP `mode` field is not the REST body. |
@@ -45,7 +45,7 @@ Discovery feeds and the account snapshot are cached and can be an hour stale. Us
 fere_polymarket_order {
   side: "BUY"|"SELL",
   outcome_token: "YES"|"NO",
-  token_id: "…",
+  token_id: "…",                  // or event_slug + outcome for multi-outcome events
   price: "0.42",
   order_type: "GTC"|"GTD"|"FOK"|"FAK",
   size: "25",

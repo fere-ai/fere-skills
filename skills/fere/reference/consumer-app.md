@@ -49,7 +49,7 @@ base-uri 'none'; form-action 'none'; frame-ancestors 'none'; object-src 'none'
 
 Also send `Referrer-Policy: no-referrer`.
 
-Stamp the CSP where the bytes leave disk, not on a path match. Encoded paths such as `/%2e/desk.html` otherwise skip the policy. `script-src 'self'` means no inline script and no third-party chart library. `style-src 'unsafe-inline'` is acceptable. CSS cannot read storage.
+Stamp the CSP where the bytes leave disk, not on a path match. Encoded or trailing-slash paths such as `/%2e/app.html` and `/app.html/` otherwise skip the policy. `script-src 'self'` means no inline script and no third-party chart library. `style-src 'unsafe-inline'` is acceptable. CSS cannot read storage.
 
 ## Writes
 
@@ -75,7 +75,7 @@ The server turns "$25 at 3×" into the `POST /v1/perp/open` body. Prepare places
 
 - Read the mark from Hyperliquid `allMids` at prepare time. No cache. No live price means 409, not a stale price.
 - Round size down to `szDecimals` with `Decimal`. `szDecimals` 0 means integer contracts. A size that rounds to 0 is a rejection. Size is base token, not dollars.
-- Round order prices to at most 5 significant figures and at most `MAX_DECIMALS − szDecimals` decimals. Do not round observed prices.
+- Round order prices to at most 5 significant figures and at most `6 − szDecimals` decimals (Hyperliquid's perp price rule). Do not round observed prices.
 - Refuse notional under $10 and say the arithmetic. Clamp leverage to the market cap and report the clamp.
 - Use isolated margin (`is_cross: false`) when the UI promises a bounded loss. Cross backs the position with the whole balance.
 - Return `side`, the live mark, the card mark, drift, TP, and SL. If the side flipped or price moved more than 0.5%, re-render. Do not send.

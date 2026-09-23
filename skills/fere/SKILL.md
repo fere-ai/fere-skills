@@ -31,7 +31,7 @@ lane below, read the one reference file it names, then act.
 | | **MCP connector** (`fere_*` tools) | **key-auth REST** (`scripts/fere.py`) |
 |---|---|---|
 | Who | *you*, in Claude/Cursor/ChatGPT — research, one-off trades on **the human's own account** | *code* — a script, a bot, CI; also the substrate `/fere-multitenant` builds on |
-| Auth | Clerk OAuth against `https://api.fereai.xyz/mcp` (add it as a connector) | Ed25519 → `agt_*` bearer, 1 h |
+| Auth | Clerk OAuth, or an `agt_*` bearer for headless use, against `https://api.fereai.xyz/mcp` | Ed25519 → `agt_*` bearer, 1 h |
 | Wallets | exactly one pair — the account's | one pair per agent; more wallets = more agents |
 | Polymarket | ✅ 12 tools, incl. discovery + live prices (but `fere_polymarket_setup` posts `/setup/v2`, which fails on a fresh agent — let `fere_polymarket_account` run setup) | ✅ **own Safe per agent** via the `/polymarket/*` routes; no discovery/price tools |
 | Hyperliquid | ✅ perps + spot on that one account | ✅ **own HL account per agent** (`min_fund_usd` 50 — **fund first; fund runs setup itself**; setup on an empty account fails `HYPERLIQUID_NOT_FUNDED`) |
@@ -101,7 +101,7 @@ is the login**; back it up, never commit it, never print it.
 Min notional **$5** (HL: $10 per order, **$6 to withdraw** from HL; Earn **$100** to
 deposit *and* to withdraw) — `fere.py` enforces the $5 on `--usd`, but a raw `--amount`
 in smallest units is passed through unchecked, so size that path yourself. Default `slippage_bps` 300, 500 on thin books.
-All-in cost measured **57–70 bps per leg** same-chain (120 bps round trip); bridging into Robinhood Chain tolled
+All-in cost same-chain runs **57–70 bps per leg**; budget 60–100. Bridging into Robinhood Chain tolled
 **2–8 %, variably** — deposit per chain instead of bridging on the buy path.
 
 ## 4. Pick the lane
@@ -129,8 +129,7 @@ All-in cost measured **57–70 bps per leg** same-chain (120 bps round trip); br
   `reference/wallets.md`, and `/fere-multitenant`'s `reference/vs-privy.md`.)
 - **No CORS.** A browser cannot call `api.fereai.xyz` directly; put a stateless
   method+path-allowlisted passthrough in front and keep `/v1/chat` denied (the one
-  endpoint known to burn credits, 15 per query; a full live run — swaps, perps, CLOB
-  fills — moved credits 200.0 → 200.0).
+  endpoint known to burn credits, 15 per query).
 - **No sub-accounts.** One wallet pair per agent. More wallets = more agents.
 - **No Polymarket discovery or live prices outside MCP.** Every *trading* route works per
   agent, but `markets`, `prices` and `whale_data` are MCP-only conveniences — read
@@ -141,12 +140,12 @@ All-in cost measured **57–70 bps per leg** same-chain (120 bps round trip); br
 ## 6. Cost
 
 Reads, dryruns, hook and limit-order registration, security checks, Polymarket setup
-and every *failed* venue write burn **0 credits** (119 calls, 200.0 → 200.0). A fresh
+and every *failed* venue write burn **0 credits**. A fresh
 agent gets **200 credits that expire in 14 days**; packs are $5→300, $10→650,
 $20→1,400, and `GET /credits/packs` + `GET /credits/recharge-chains` answer an `agt_`
 bearer, so an API agent can at least *see* the recharge path (`POST
-/credits/onchain-recharge` is the buy — untested). Credits consumed by a live swap
-are **zero** (200.0 → 200.0 across the live run). Still open: whether an agent whose
+/credits/onchain-recharge` is the buy — untested). Live swaps, perps and CLOB fills
+also burned **zero** credits. Still open: whether an agent whose
 200 free credits expired at day 14 can still trade. Read `GET /v1/credits` around your own and
 write the number down.
 
@@ -166,13 +165,9 @@ from a connector, not this folder — add it with
 {"mcpServers": {"FereAI": {"type": "http", "url": "https://api.fereai.xyz/mcp"}}}
 ```
 
-which authenticates by Clerk OAuth in the client. Fere's docs say the same endpoint
-also accepts an `Authorization: Bearer agt_…` header, which would point MCP at a wallet
-you made with the CLI — documented, not tested by us.
-
-A shareable version of all this — path chooser, copy-paste setup, the comparison table —
-is the page in `site/index.html`, published at
-https://claude.ai/code/artifact/dce0adba-828a-4234-9aed-0c03ccad0cc7
+which authenticates by Clerk OAuth in the client. The same endpoint also accepts an
+`Authorization: Bearer agt_…` header, which points MCP at a wallet you made with the
+CLI (headless mode in the README).
 
 ## 8. If something looks broken
 

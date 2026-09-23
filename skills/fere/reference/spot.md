@@ -102,7 +102,7 @@ Refresh on a user refresh, while waiting for a deposit, and on every fill diff. 
 | | Hooks (`take_profit` / `stop_loss`, or `POST /v1/hooks`) | Limit orders (`POST /v1/limit-orders`) |
 |---|---|---|
 | Trigger | Percentage off Fere's price at registration | Absolute USD |
-| Cancel | `DELETE /wallet/outstanding-orders` | `GET` / `DELETE /v1/limit-orders/{id}` |
+| List / cancel | `GET` / `DELETE /wallet/outstanding-orders` | `GET /v1/limit-orders[?status=]` / `DELETE /v1/limit-orders/{id}` |
 | Use | Arm at buy time | Anything you may replace |
 
 Hooks re-base on Fere's mark, not your entry. Arm them inline, then re-arm with limit orders priced off your own entry. Hooks can disappear. Reconcile `holdings[].outstanding_orders` on every poll and re-arm what is missing.

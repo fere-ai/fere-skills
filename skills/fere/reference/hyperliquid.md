@@ -9,7 +9,7 @@ Perps are `/v1/perp/*` (MCP `fere_perp_*`). USDC-quoted spot is `/v1/spot_hl/*` 
   "min_fund_usd": 50.0 }
 ```
 
-`last_error` stays null after a failed setup. The task is the verdict, not this read. Budget $50 before the account can trade. Spot swaps are $5. Polymarket's Safe is $5.
+`last_error` stays null after a failed setup. The task is the verdict, not this read. Budget $50 before the account can trade. For comparison, an on-chain swap needs $5 and Polymarket's Safe needs $5.
 
 ## Calls
 
