@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
+  "name": "fere-skills",
+  "description": "FereAI skills for trading with one wallet.",
+  "owner": {
+    "name": "FereAI",
+    "url": "https://github.com/fere-ai"
+  },
+  "metadata": {
+    "description": "FereAI skills",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "fere-skills",
+      "description": "One wallet on FereAI: swaps, bridges, Hyperliquid, Polymarket, and Earn.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/fere"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "name": "fere-skills",
+  "interface": {
+    "displayName": "Fere Skills"
+  },
+  "plugins": [
+    {
+      "name": "fere-skills",
+      "version": "0.1.0",
+      "description": "One wallet on FereAI: swaps, bridges, Hyperliquid, Polymarket, and Earn.",
+      "source": {
+        "source": "local",
+        "path": "./"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

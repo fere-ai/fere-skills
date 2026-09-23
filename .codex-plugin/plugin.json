@@ -1,0 +1,19 @@
+{
+  "name": "fere-skills",
+  "version": "0.1.0",
+  "description": "FereAI skills for one wallet: swaps, bridges, Hyperliquid, Polymarket, and Earn.",
+  "author": {
+    "name": "FereAI",
+    "url": "https://github.com/fere-ai"
+  },
+  "homepage": "https://github.com/fere-ai/fere-skills",
+  "repository": "https://github.com/fere-ai/fere-skills",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Fere Skills",
+    "shortDescription": "Trade with one FereAI wallet: swaps, bridges, perps, Polymarket, and yield.",
+    "developerName": "FereAI",
+    "category": "Productivity",
+    "capabilities": ["Interactive", "Read", "Write"]
+  }
+}
