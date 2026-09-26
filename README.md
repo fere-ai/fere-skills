@@ -66,7 +66,7 @@ Use this for an unattended agent. There is no consent screen and no OAuth redire
 The MCP server mints that token when both are set:
 
 ```bash
-export FERE_AGENT_ID=agt_...
+export FERE_AGENT_ID=agent_...
 export FERE_SECRET_KEY=<base64 Ed25519 secret>
 ```
 
